@@ -1,0 +1,64 @@
+Please provide me with a master prompt that I can use to ask a coding agent to build the WhatsApp study bot app with the characteristics you've outlined. I need a comprehensive prompt that covers all the steps and requirements for the agent to understand and execute the task effectively.
+Here's a draft of a master prompt you can use. It aims to be clear, concise, and comprehensive, guiding the coding agent through each step.
+Master Prompt: Build a WhatsApp Study Bot with GPT Integration
+Goal: Develop and deploy a WhatsApp study bot that leverages OpenAI's GPT-3.5 for interactive learning and assessment, focusing on medical topics. The bot will use either Z-API or 360Dialog for WhatsApp integration and will be hosted on Render.com.
+Key Characteristics:
+ * Fast Setup: Prioritize quick development and deployment.
+ * Cost-Effective: Utilize free or low-cost tools and services.
+ * Reliable WhatsApp Connection: Ensure stable communication with WhatsApp.
+ * GPT Integration: Seamlessly integrate with OpenAI's GPT-3.5 for conversational AI.
+Tools to be Used:
+ * WhatsApp Business: For the user interface (manual setup by user).
+ * 360Dialog (or Z-API): To connect WhatsApp to the backend. Default to Z-API for faster prototyping and easier setup.
+ * Python + Flask: For the chatbot backend logic.
+ * Render.com: For free hosting of the Flask application.
+ * OpenAI API Key: To access GPT-3.5.
+Step-by-Step Build Instructions for the Coding Agent:
+Phase 1: Environment Setup & Core Logic
+ * Project Structure: Create a Python project with a requirements.txt file and a main Python script (e.g., app.py).
+ * Dependencies: Ensure the requirements.txt file includes:
+   * flask
+   * requests
+   * openai
+ * Flask Backend Development (app.py):
+   * Implement a Flask application.
+   * Define two placeholder variables at the top: OPENAI_API_KEY and ZAPI_TOKEN. The user will provide these later.
+   * Create an ask_gpt(question) function that:
+     * Takes a question string as input.
+     * Constructs a prompt for GPT-3.5-turbo: Você é um professor de medicina que avalia alunos. Pergunta: {question}\nResponda com explicação e corrija gentilmente.
+     * Makes an API call to openai.ChatCompletion.create using model="gpt-3.5-turbo" and the specified prompt.
+     * Returns the content of the GPT's response.
+   * Define a /webhook POST route (@app.route('/webhook', methods=['POST'])) that:
+     * Parses incoming JSON data from the WhatsApp API (Z-API).
+     * Extracts message (text content), sender (boolean, fromMe), and phone (chatId).
+     * Crucially: Only process messages that are NOT from the bot itself (if not sender:).
+     * Calls ask_gpt() with the user's message.
+     * Sends the GPT's response back to the user via the Z-API send-text endpoint. The URL for this POST request should be: https://api.z-api.io/instances/YOUR_INSTANCE_TOKEN/token/YOUR_TOKEN/send-text. Note: The YOUR_INSTANCE_TOKEN and YOUR_TOKEN are part of the ZAPI_TOKEN that the user will configure. The agent should make it clear that the user needs to provide these within the ZAPI_TOKEN variable or as separate environment variables during deployment.
+     * Returns "ok", 200.
+Phase 2: Deployment Configuration
+ * Render.com Deployment Instructions:
+   * Provide clear, step-by-step instructions for deploying the Flask application on Render.com.
+   * Detail how to create a free Render account.
+   * Explain how to connect a GitHub repository (if the user creates one) or directly upload the script.
+   * Specify that the "Web Service" type should be chosen.
+   * Indicate that the build command will likely be pip install -r requirements.txt.
+   * Specify the start command for a Flask app (e.g., gunicorn app:app or python app.py).
+   * Emphasize the importance of setting environment variables for OPENAI_API_KEY and ZAPI_TOKEN within Render.com's dashboard. Explain that ZAPI_TOKEN will contain the full URL structure including YOUR_INSTANCE_TOKEN and YOUR_TOKEN.
+   * Explain how to obtain the public URL for the deployed service (e.g., https://ai-study-bot.onrender.com/webhook).
+Phase 3: Webhook Configuration (User Action)
+ * Z-API Webhook Setup Instructions:
+   * Provide concise instructions for the user to configure the webhook in the Z-API dashboard.
+   * Clearly state that the Render.com public URL (obtained in the previous step) should be pasted into the "Webhook" field in the Z-API dashboard.
+Post-Build Instructions & Next Steps (Informational for User):
+ * Testing: Remind the user how to test the bot by sending a message like "Estudei infarto agudo do miocárdio" in WhatsApp.
+ * Further Enhancements: Briefly mention potential future improvements:
+   * Adding session memory (Redis or Python dict).
+   * Improving GPT prompts.
+   * Integrating payment solutions.
+   * Tracking usage.
+Agent's Deliverables:
+ * Python Flask Code (app.py): Fully functional and commented.
+ * requirements.txt file: Listing all necessary Python libraries.
+ * Deployment Guide: Detailed instructions for deploying on Render.com, including environment variable setup.
+ * Z-API Webhook Configuration Guide: Simple instructions for the user to set up the webhook.
+ * Important Notes/Assumptions: Any assumptions made or critical information the user needs to provide (e.g., obtaining API keys, Z-API tokens, WhatsApp Business setup).
