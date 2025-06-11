@@ -29,9 +29,10 @@ if OPENAI_API_KEY:
             # Handle Replit's automatic proxy injection
             logging.info("Retrying OpenAI client initialization without proxy settings")
             try:
-                # Use the imported module
-                openai_module.api_key = OPENAI_API_KEY
-                openai_client = openai_module.OpenAI()
+                # Create a clean configuration dictionary with only the API key
+                config = {"api_key": OPENAI_API_KEY}
+                # Manually initialize the client with only the needed parameters
+                openai_client = OpenAI(**config)
             except Exception as inner_e:
                 logging.warning(
                     f"Failed to initialize OpenAI client on second attempt: {inner_e}"
