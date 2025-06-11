@@ -3,6 +3,7 @@ import logging
 import requests
 from flask import Flask, request, jsonify
 from openai import OpenAI
+import openai as openai_module  # Import the full openai module for fallback
 
 # Configure logging for debugging
 logging.basicConfig(level=logging.DEBUG)
@@ -20,7 +21,25 @@ ZAPI_TOKEN = os.environ.get("ZAPI_TOKEN")
 openai_client = None
 if OPENAI_API_KEY:
     try:
+        # Initialize OpenAI client with only the supported arguments
+        # This avoids the 'proxies' argument issue in Replit
         openai_client = OpenAI(api_key=OPENAI_API_KEY)
+    except TypeError as e:
+        if "proxies" in str(e):
+            # Handle Replit's automatic proxy injection
+            logging.info("Retrying OpenAI client initialization without proxy settings")
+            try:
+                # Use the imported module
+                openai_module.api_key = OPENAI_API_KEY
+                openai_client = openai_module.OpenAI()
+            except Exception as inner_e:
+                logging.warning(
+                    f"Failed to initialize OpenAI client on second attempt: {inner_e}"
+                )
+                openai_client = None
+        else:
+            logging.warning(f"Failed to initialize OpenAI client: {e}")
+            openai_client = None
     except Exception as e:
         logging.warning(f"Failed to initialize OpenAI client: {e}")
         openai_client = None
